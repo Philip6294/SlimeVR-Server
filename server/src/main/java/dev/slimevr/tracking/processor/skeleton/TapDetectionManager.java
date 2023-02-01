@@ -4,6 +4,7 @@ package dev.slimevr.tracking.processor.skeleton;
 import dev.slimevr.config.TapDetectionConfig;
 import dev.slimevr.osc.VRCOSCHandler;
 import dev.slimevr.tracking.trackers.Tracker;
+import io.eiren.util.logging.LogManager;
 
 
 // handles tap detection for the skeleton
@@ -102,6 +103,7 @@ public class TapDetectionManager {
 		) {
 			if (oscHandler != null)
 				oscHandler.yawAlign();
+			LogManager.debug("Tap Quick Reset");
 			skeleton.resetTrackersYaw();
 			quickResetDetector.resetDetector();
 		}
@@ -115,6 +117,7 @@ public class TapDetectionManager {
 		) {
 			if (oscHandler != null)
 				oscHandler.yawAlign();
+			LogManager.debug("Tap Reset");
 			skeleton.resetTrackersFull();
 			resetDetector.resetDetector();
 		}
@@ -128,6 +131,7 @@ public class TapDetectionManager {
 				&& System.nanoTime() - mountingResetDetector.getDetectionTime()
 					> mountingResetDelayNs
 		) {
+			LogManager.debug("Tap Mounting Reset");
 			skeleton.resetTrackersMounting();
 			mountingResetDetector.resetDetector();
 		}
