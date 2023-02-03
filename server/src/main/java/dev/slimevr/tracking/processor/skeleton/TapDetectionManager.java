@@ -156,7 +156,7 @@ public class TapDetectionManager {
 		if (
 			tapped
 				&& System.nanoTime() - mountingResetDetector.getDetectionTime()
-				> mountingResetDelayNs
+					> mountingResetDelayNs
 		) {
 			LogManager.debug("Tap Mounting Reset");
 			skeleton.resetTrackersMounting();
@@ -207,11 +207,12 @@ public class TapDetectionManager {
 					case 2 -> "/triple beep.wav";
 				};
 
-				try  {
+				try {
 					Clip clip = AudioSystem.getClip();
 
 					BufferedInputStream bufferedStream = new BufferedInputStream(
-						Objects.requireNonNull(this.getClass().getResourceAsStream(soundName)));
+						Objects.requireNonNull(this.getClass().getResourceAsStream(soundName))
+					);
 					AudioInputStream inputStream = AudioSystem.getAudioInputStream(bufferedStream);
 
 					clip.open(inputStream);
