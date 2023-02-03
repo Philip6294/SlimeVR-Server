@@ -9,7 +9,8 @@ import io.eiren.util.logging.LogManager;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
-import java.io.InputStream;
+import java.io.BufferedInputStream;
+import java.util.Objects;
 
 
 // handles tap detection for the skeleton
@@ -196,23 +197,29 @@ public class TapDetectionManager {
 	}
 
 
-	// TODO sounds specific for each reset
-	// TODO actually test
 	private void playSound(int i) {
 		new Thread(new Runnable() {
-			// The wrapper thread is unnecessary, unless it blocks on the
-			// Clip finishing; see comments.
-			public void run() {
-				try {
-					Clip clip = AudioSystem.getClip();
-					ClassLoader classloader = Thread.currentThread().getContextClassLoader();
-					InputStream is = classloader.getResourceAsStream("sound.wav");
 
-					AudioInputStream inputStream = AudioSystem.getAudioInputStream(is);
+			public void run() {
+				String soundName = switch (i) {
+					default -> "/beep.wav"; // default implies 0
+					case 1 -> "/double beep.wav";
+					case 2 -> "/triple beep.wav";
+				};
+
+				try  {
+					Clip clip = AudioSystem.getClip();
+
+					BufferedInputStream bufferedStream = new BufferedInputStream(
+						Objects.requireNonNull(this.getClass().getResourceAsStream(soundName)));
+					AudioInputStream inputStream = AudioSystem.getAudioInputStream(bufferedStream);
+
 					clip.open(inputStream);
 					clip.start();
+
 				} catch (Exception e) {
 					System.err.println(e.getMessage());
+					e.printStackTrace();
 				}
 			}
 		}).start();
