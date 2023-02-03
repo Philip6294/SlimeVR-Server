@@ -6,6 +6,11 @@ import dev.slimevr.osc.VRCOSCHandler;
 import dev.slimevr.tracking.trackers.Tracker;
 import io.eiren.util.logging.LogManager;
 
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import java.io.InputStream;
+
 
 // handles tap detection for the skeleton
 public class TapDetectionManager {
@@ -30,6 +35,10 @@ public class TapDetectionManager {
 	private float resetDelayNs = 0.20f * NS_CONVERTER;
 	private float quickResetDelayNs = 1.00f * NS_CONVERTER;
 	private float mountingResetDelayNs = 1.00f * NS_CONVERTER;
+
+	private boolean quickResetNotFired = true;
+	private boolean resetNotFired = true;
+	private boolean mountingResetNotFired = true;
 
 	public TapDetectionManager(HumanSkeleton skeleton) {
 		this.skeleton = skeleton;
@@ -98,6 +107,11 @@ public class TapDetectionManager {
 	private void checkQuickReset() {
 		boolean tapped = (quickResetTaps <= quickResetDetector.getTaps());
 
+		if (tapped && quickResetNotFired) {
+			playSound(0);
+			quickResetNotFired = false;
+		}
+
 		if (
 			tapped && System.nanoTime() - quickResetDetector.getDetectionTime() > quickResetDelayNs
 		) {
@@ -106,11 +120,17 @@ public class TapDetectionManager {
 			LogManager.debug("Tap Quick Reset");
 			skeleton.resetTrackersYaw();
 			quickResetDetector.resetDetector();
+			quickResetNotFired = true;
 		}
 	}
 
 	private void checkReset() {
 		boolean tapped = (resetTaps <= resetDetector.getTaps());
+
+		if (tapped && resetNotFired) {
+			playSound(1);
+			resetNotFired = false;
+		}
 
 		if (
 			tapped && System.nanoTime() - resetDetector.getDetectionTime() > resetDelayNs
@@ -120,26 +140,34 @@ public class TapDetectionManager {
 			LogManager.debug("Tap Reset");
 			skeleton.resetTrackersFull();
 			resetDetector.resetDetector();
+			resetNotFired = true;
 		}
 	}
 
 	private void checkMountingReset() {
 		boolean tapped = (mountingResetTaps <= mountingResetDetector.getTaps());
 
+		if (tapped && mountingResetNotFired) {
+			playSound(2);
+			mountingResetNotFired = false;
+		}
+
 		if (
 			tapped
 				&& System.nanoTime() - mountingResetDetector.getDetectionTime()
-					> mountingResetDelayNs
+				> mountingResetDelayNs
 		) {
 			LogManager.debug("Tap Mounting Reset");
 			skeleton.resetTrackersMounting();
 			mountingResetDetector.resetDetector();
+			mountingResetNotFired = true;
 		}
 	}
 
 	// returns either the chest tracker, hip tracker, or waist tracker depending
 	// on which one is available
 	// if none are available, returns null
+
 	private Tracker getTrackerToWatchQuickReset() {
 		if (skeleton.chestTracker != null)
 			return skeleton.chestTracker;
@@ -167,4 +195,26 @@ public class TapDetectionManager {
 		return null;
 	}
 
+
+	// TODO sounds specific for each reset
+	// TODO actually test
+	private void playSound(int i) {
+		new Thread(new Runnable() {
+			// The wrapper thread is unnecessary, unless it blocks on the
+			// Clip finishing; see comments.
+			public void run() {
+				try {
+					Clip clip = AudioSystem.getClip();
+					ClassLoader classloader = Thread.currentThread().getContextClassLoader();
+					InputStream is = classloader.getResourceAsStream("sound.wav");
+
+					AudioInputStream inputStream = AudioSystem.getAudioInputStream(is);
+					clip.open(inputStream);
+					clip.start();
+				} catch (Exception e) {
+					System.err.println(e.getMessage());
+				}
+			}
+		}).start();
+	}
 }
