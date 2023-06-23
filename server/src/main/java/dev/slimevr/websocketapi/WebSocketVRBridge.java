@@ -39,6 +39,20 @@ public class WebSocketVRBridge extends WebsocketAPI implements Bridge {
 		true,
 		true
 	);
+	private final Tracker internalHMDTracker = new Tracker(
+		null,
+		0,
+		"internal://HMD",
+		"internal://HMD",
+		TrackerPosition.HEAD,
+		null,
+		true,
+		true,
+		false,
+		false,
+		true,
+		true
+	);
 
 	public WebSocketVRBridge(
 		Tracker hmd,
@@ -55,6 +69,11 @@ public class WebSocketVRBridge extends WebsocketAPI implements Bridge {
 				t.getId(),
 				"internal://" + t.getName(),
 				"internal://" + t.getName(),
+				t.getTrackerPosition(),
+				null,
+				true,
+				true,
+				false,
 				t.getTrackerPosition(),
 				true,
 				true,
