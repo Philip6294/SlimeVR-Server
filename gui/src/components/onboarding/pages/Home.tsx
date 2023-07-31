@@ -1,38 +1,29 @@
 import { useLocalization } from '@fluent/react';
-import { useState } from 'react';
 import { useOnboarding } from '../../../hooks/onboarding';
 import { Button } from '../../commons/Button';
 import { SlimeVRIcon } from '../../commons/icon/SimevrIcon';
 import { LangSelector } from '../../commons/LangSelector';
 import { Typography } from '../../commons/Typography';
-import { SkipSetupButton } from '../SkipSetupButton';
-import { SkipSetupWarningModal } from '../SkipSetupWarningModal';
 
 export function HomePage() {
   const { l10n } = useLocalization();
-  const { applyProgress, skipSetup } = useOnboarding();
-  const [skipWarning, setSkipWarning] = useState(false);
+  const { applyProgress } = useOnboarding();
 
   applyProgress(0.1);
 
   return (
     <>
-      <div className="flex flex-col gap-5 h-full items-center w-full justify-center relative">
-        <SkipSetupButton
-          visible={true}
-          modalVisible={skipWarning}
-          onClick={() => setSkipWarning(true)}
-        ></SkipSetupButton>
+      <div className="flex flex-col gap-5 h-full items-center w-full justify-center px-4">
         <div className="flex flex-col gap-5 items-center z-10 scale-150 mb-20">
           <SlimeVRIcon></SlimeVRIcon>
-          <Typography variant="main-title">
+          <Typography variant="mobile-title">
             {l10n.getString('onboarding-home')}
           </Typography>
           <Button variant="primary" to="/onboarding/wifi-creds">
             {l10n.getString('onboarding-home-start')}
           </Button>
         </div>
-        <div className="absolute right-0 bottom-4 z-50">
+        <div className="absolute right-4 bottom-4 z-50">
           <LangSelector />
         </div>
         <div
@@ -45,7 +36,7 @@ export function HomePage() {
         ></div>
         <img
           className="absolute"
-          src="/images/slime-girl.png"
+          src="/images/slime-girl.webp"
           style={{
             width: '35%',
             maxWidth: 800,
@@ -55,7 +46,7 @@ export function HomePage() {
         />
         <img
           className="absolute"
-          src="/images/slimes.png"
+          src="/images/slimes.webp"
           style={{
             width: '35%',
             maxWidth: 800,
@@ -64,11 +55,6 @@ export function HomePage() {
           }}
         />
       </div>
-      <SkipSetupWarningModal
-        accept={skipSetup}
-        onClose={() => setSkipWarning(false)}
-        isOpen={skipWarning}
-      ></SkipSetupWarningModal>
     </>
   );
 }

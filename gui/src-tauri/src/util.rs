@@ -10,6 +10,8 @@ use std::{
 
 use clap::Parser;
 use const_format::concatcp;
+use flexi_logger::{DeferredNow, style};
+use log::Record;
 use shadow_rs::shadow;
 use tempfile::Builder;
 
@@ -58,7 +60,7 @@ pub fn get_launch_path(cli: Cli) -> Option<PathBuf> {
 	let paths = [
 		cli.launch_from_path,
 		// AppImage passes the fakeroot in `APPDIR` env var.
-		env::var_os("APPDIR").map(|x| PathBuf::from(x)),
+		env::var_os("APPDIR").map(PathBuf::from),
 		env::current_dir().ok(),
 		// getcwd in Mac can't be trusted, so let's get the executable's path
 		env::current_exe()
@@ -73,10 +75,7 @@ pub fn get_launch_path(cli: Cli) -> Option<PathBuf> {
 		Some(PathBuf::from("/usr/share/slimevr/")),
 	];
 
-	paths
-		.into_iter()
-		.filter_map(|x| x)
-		.find(|x| is_valid_path(x))
+	paths.into_iter().flatten().find(|x| is_valid_path(x))
 }
 
 pub fn spawn_java(java: &OsStr, java_version: &OsStr) -> std::io::Result<Child> {
@@ -218,4 +217,26 @@ pub fn valid_java_paths() -> Vec<(OsString, i32)> {
 				.filter(|(_p, code)| *code >= MINIMUM_JAVA_VERSION)
 		})
 		.collect()
+}
+
+pub fn logger_format(
+    w: &mut dyn std::io::Write,
+    _now: &mut DeferredNow,
+    record: &Record,
+) -> Result<(), std::io::Error> {
+    let level = record.level();
+	let module_path = record.module_path().unwrap_or("<unnamed>");
+	// optionally print target
+	let target = if module_path.starts_with(record.target()) {
+		"".to_string()
+	} else {
+		format!(", {}", record.target())
+	};
+    write!(
+        w,
+        "{} [{}{target}] {}",
+        style(level).paint(level.to_string()),
+        record.module_path().unwrap_or("<unnamed>"),
+        style(level).paint(record.args().to_string())
+    )
 }

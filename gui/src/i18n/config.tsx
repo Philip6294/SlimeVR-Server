@@ -10,6 +10,7 @@ import {
   useContext,
 } from 'react';
 import { exists, readTextFile, BaseDirectory } from '@tauri-apps/api/fs';
+import { error } from '../utils/logging';
 
 export const defaultNS = 'translation';
 export const DEFAULT_LOCALE = 'en';
@@ -23,6 +24,10 @@ export const langs = [
   {
     name: '🇨🇿 Čeština',
     key: 'cs',
+  },
+  {
+    name: '🇩🇰 Dansk',
+    key: 'da',
   },
   {
     name: '🇩🇪 Deutsch',
@@ -61,7 +66,7 @@ export const langs = [
     key: 'ko',
   },
   {
-    name: '🇳🇴  Norsk bokmål',
+    name: '🇳🇴 Norsk bokmål',
     key: 'nb-NO',
   },
   {
@@ -79,6 +84,10 @@ export const langs = [
   {
     name: '🇷🇺 Русский',
     key: 'ru',
+  },
+  {
+    name: '🇺🇦 Українська',
+    key: 'uk',
   },
   {
     name: '🇻🇳 Tiếng Việt',
@@ -128,7 +137,7 @@ function verifyLocale(locale: string | null): string | null {
     new Intl.Locale(locale);
     return locale;
   } catch (e) {
-    console.error(e);
+    error(e);
     return null;
   }
 }
@@ -170,6 +179,7 @@ export function AppLocalizationProvider(props: AppLocalizationProviderProps) {
 
     const bundles = lazilyParsedBundles(fetchedMessages);
     localStorage.setItem('i18nextLng', currentLocale);
+    document.documentElement.lang = currentLocale;
     setL10n(new ReactLocalization(bundles));
   }
 

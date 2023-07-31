@@ -1,4 +1,3 @@
-### SlimeVR complete GUI translations
 # Please developers (not translators) don't reuse a key inside another key
 # or concat text with a translation string in the code, use the appropriate
 # features like variables and selectors in each appropriate case!
@@ -11,7 +10,7 @@ websocket-connection_lost = Connection lost to the server. Trying to reconnect..
 
 ## Update notification
 version_update-title = New version available: { $version }
-version_update-description = Clicking "Update" will download the SlimeVR installer for you.
+version_update-description = Clicking "{ version_update-update }" will download the SlimeVR installer for you.
 version_update-update = Update
 version_update-close = Close
 
@@ -32,6 +31,7 @@ body_part-RIGHT_HAND = Right hand
 body_part-RIGHT_UPPER_LEG = Right thigh
 body_part-RIGHT_LOWER_LEG = Right ankle
 body_part-RIGHT_FOOT = Right foot
+body_part-UPPER_CHEST = Upper chest
 body_part-CHEST = Chest
 body_part-WAIST = Waist
 body_part-HIP = Hip
@@ -48,8 +48,9 @@ skeleton_bone-NONE = None
 skeleton_bone-HEAD = Head Shift
 skeleton_bone-NECK = Neck Length
 skeleton_bone-torso_group = Torso length
-skeleton_bone-CHEST = Chest Length
+skeleton_bone-UPPER_CHEST = Upper Chest Length
 skeleton_bone-CHEST_OFFSET = Chest Offset
+skeleton_bone-CHEST = Chest Length
 skeleton_bone-WAIST = Waist Length
 skeleton_bone-HIP = Hip Length
 skeleton_bone-HIP_OFFSET = Hip Offset
@@ -92,9 +93,13 @@ navbar-mounting = Mounting Calibration
 navbar-onboarding = Setup Wizard
 navbar-settings = Settings
 
-## Bounding volume hierarchy recording
+## Biovision hierarchy recording
 bvh-start_recording = Record BVH
 bvh-recording = Recording...
+
+## Tracking pause
+tracking-unpaused = Pause tracking
+tracking-paused = Unpause tracking
 
 ## Widget: Overlay settings
 widget-overlay = Overlay
@@ -103,6 +108,9 @@ widget-overlay-is_mirrored_label = Display Overlay as Mirror
 
 ## Widget: Drift compensation
 widget-drift_compensation-clear = Clear drift compensation
+
+## Widget: Clear Reset Mounting
+widget-clear_mounting = Clear reset mounting
 
 ## Widget: Developer settings
 widget-developer_mode = Developer Mode
@@ -142,9 +150,15 @@ tracker-table-column-url = URL
 
 ## Tracker rotation
 tracker-rotation-front = Front
+tracker-rotation-front_left = Front-Left
+tracker-rotation-front_right = Front-Right
 tracker-rotation-left = Left
 tracker-rotation-right = Right
 tracker-rotation-back = Back
+tracker-rotation-back_left = Back-Left
+tracker-rotation-back_right = Back-Right
+tracker-rotation-custom = Custom
+tracker-rotation-overriden = (overriden by mounting reset)
 
 ## Tracker information
 tracker-infos-manufacturer = Manufacturer
@@ -204,6 +218,7 @@ tracker_selection_menu-RIGHT_UPPER_LEG = { -tracker_selection-part } right thigh
 tracker_selection_menu-RIGHT_LOWER_LEG = { -tracker_selection-part } right ankle?
 tracker_selection_menu-RIGHT_FOOT = { -tracker_selection-part } right foot?
 tracker_selection_menu-RIGHT_CONTROLLER = { -tracker_selection-part } right controller?
+tracker_selection_menu-UPPER_CHEST = { -tracker_selection-part } upper chest?
 tracker_selection_menu-CHEST = { -tracker_selection-part } chest?
 tracker_selection_menu-WAIST = { -tracker_selection-part } waist?
 tracker_selection_menu-HIP = { -tracker_selection-part } hip?
@@ -243,6 +258,8 @@ settings-sidebar-osc_router = OSC router
 settings-sidebar-osc_trackers = VRChat OSC Trackers
 settings-sidebar-utils = Utilities
 settings-sidebar-serial = Serial console
+settings-sidebar-appearance = Appearance
+settings-sidebar-notifications = Notifications
 
 ## SteamVR settings
 settings-general-steamvr = SteamVR
@@ -308,11 +325,23 @@ settings-general-fk_settings-leg_fk = Leg tracking
 settings-general-fk_settings-arm_fk = Arm tracking
 settings-general-fk_settings-arm_fk-description = Force arms to be tracked from the HMD even if positional hand data is available.
 settings-general-fk_settings-arm_fk-force_arms = Force arms from HMD
-settings-general-fk_settings-skeleton_settings = Skeleton settings
+settings-general-fk_settings-skeleton_settings-toggles = Skeleton toggles
 settings-general-fk_settings-skeleton_settings-description = Toggle skeleton settings on or off. It is recommended to leave these on.
-settings-general-fk_settings-skeleton_settings-extended_spine = Extended spine
-settings-general-fk_settings-skeleton_settings-extended_pelvis = Extended pelvis
-settings-general-fk_settings-skeleton_settings-extended_knees = Extended knee
+settings-general-fk_settings-skeleton_settings-extended_spine_model = Extended spine model
+settings-general-fk_settings-skeleton_settings-extended_pelvis_model = Extended pelvis model
+settings-general-fk_settings-skeleton_settings-extended_knees_model = Extended knee model
+settings-general-fk_settings-skeleton_settings-ratios = Skeleton ratios
+settings-general-fk_settings-skeleton_settings-ratios-description = Change the values of skeleton settings. You may need to adjust your proportions after changing these.
+settings-general-fk_settings-skeleton_settings-impute_waist_from_chest_hip = Impute waist from chest to hip
+settings-general-fk_settings-skeleton_settings-impute_waist_from_chest_legs = Impute waist from chest to legs
+settings-general-fk_settings-skeleton_settings-impute_hip_from_chest_legs = Impute hip from chest to legs
+settings-general-fk_settings-skeleton_settings-impute_hip_from_waist_legs = Impute hip from waist to legs
+settings-general-fk_settings-skeleton_settings-interp_hip_legs = Average the hip's yaw and roll with the legs'
+settings-general-fk_settings-skeleton_settings-interp_knee_tracker_ankle = Average the knee trackers' yaw and roll with the ankles'
+
+settings-general-fk_settings-self_localization-title = Mocap mode
+settings-general-fk_settings-self_localization-description = Mocap Mode allows the skeleton to roughly track its own position without a headset or other trackers. Note that this requires feet and head trackers to work and is still experimental.
+
 settings-general-fk_settings-vive_emulation-title = Vive emulation
 settings-general-fk_settings-vive_emulation-description = Emulate the waist tracker problems that Vive trackers have. This is a joke and makes tracking worse.
 settings-general-fk_settings-vive_emulation-label = Enable Vive emulation
@@ -320,12 +349,18 @@ settings-general-fk_settings-vive_emulation-label = Enable Vive emulation
 ## Gesture control settings (tracker tapping)
 settings-general-gesture_control = Gesture control
 settings-general-gesture_control-subtitle = Tap based resets
-settings-general-gesture_control-description = Allows for resets to be triggered by tapping a tracker. The tracker highest up on your torso is used for Yaw Reset, the tracker highest up on your left leg is used for Full Reset, and the tracker highest up on your right leg is used for Mounting Reset. It should be mentioned that taps must happen within 0.6 seconds to be registered.
+settings-general-gesture_control-description = Allows for resets to be triggered by tapping a tracker. The tracker highest up on your torso is used for Yaw Reset, the tracker highest up on your left leg is used for Full Reset, and the tracker highest up on your right leg is used for Mounting Reset. Taps must occur within the time limit of 0.3 seconds times the number of taps to be recognized.
 # This is a unit: 3 taps, 2 taps, 1 tap
 # $amount (Number) - Amount of taps (touches to the tracker's case)
 settings-general-gesture_control-taps = { $amount ->
     [one] 1 tap
     *[other] { $amount } taps
+}
+# This is a unit: 3 trackers, 2 trackers, 1 tracker
+# $amount (Number) - Amount of trackers
+settings-general-gesture_control-trackers = { $amount ->
+    [one] 1 tracker
+    *[other] { $amount } trackers
 }
 settings-general-gesture_control-yawResetEnabled = Enable tap to yaw reset
 settings-general-gesture_control-yawResetDelay = Yaw reset delay
@@ -336,23 +371,37 @@ settings-general-gesture_control-fullResetTaps = Taps for full reset
 settings-general-gesture_control-mountingResetEnabled = Enable tap to reset mounting
 settings-general-gesture_control-mountingResetDelay = Mounting reset delay
 settings-general-gesture_control-mountingResetTaps = Taps for mounting reset
+# The number of trackers that can have higher acceleration before a tap is rejected
+settings-general-gesture_control-numberTrackersOverThreshold = Trackers over threshold
+settings-general-gesture_control-numberTrackersOverThreshold-description = Increase this value if tap detection is not working. Do not increase it above what is needed to make tap detection work as it would cause more false positives.
 
-## Interface settings
-settings-general-interface = Interface
+## Appearance settings
+settings-interface-appearance = Appearance
 settings-general-interface-dev_mode = Developer Mode
 settings-general-interface-dev_mode-description = This mode can be useful if you need in-depth data or to interact with connected trackers on a more advanced level.
 settings-general-interface-dev_mode-label = Developer Mode
-settings-general-interface-serial_detection = Serial device detection
-settings-general-interface-serial_detection-description = This option will show a pop-up every time you plug a new serial device that could be a tracker. It helps improving the setup process of a tracker.
-settings-general-interface-serial_detection-label = Serial device detection
-settings-general-interface-feedback_sound = Feedback sound
-settings-general-interface-feedback_sound-description = This option will play a sound when a reset is triggered
-settings-general-interface-feedback_sound-label = Feedback sound
-settings-general-interface-feedback_sound-volume = Feedback sound volume
 settings-general-interface-theme = Color theme
 settings-general-interface-lang = Select language
 settings-general-interface-lang-description = Change the default language you want to use.
 settings-general-interface-lang-placeholder = Select the language to use
+# Keep the font name untranslated
+settings-interface-appearance-font = GUI font
+settings-interface-appearance-font-description = This changes the font used by the interface.
+settings-interface-appearance-font-placeholder = Default font
+settings-interface-appearance-font-os_font = OS font
+settings-interface-appearance-font-slime_font = Default font
+settings-interface-appearance-font_size = Base font scaling
+settings-interface-appearance-font_size-description = This affects the font size of the whole interface except this settings panel.
+
+## Notification settings
+settings-interface-notifications = Notifications
+settings-general-interface-serial_detection = Serial device detection
+settings-general-interface-serial_detection-description = This option will show a pop-up every time you plug a new serial device that could be a tracker. It helps improving the setup process of a tracker.
+settings-general-interface-serial_detection-label = Serial device detection
+settings-general-interface-feedback_sound = Feedback sound
+settings-general-interface-feedback_sound-description = This option will play a sound when a reset is triggered.
+settings-general-interface-feedback_sound-label = Feedback sound
+settings-general-interface-feedback_sound-volume = Feedback sound volume
 
 ## Serial settings
 settings-serial = Serial Console
@@ -436,7 +485,7 @@ settings-osc-vmc-enable = Enable
 settings-osc-vmc-enable-description = Toggle the sending and receiving of data.
 settings-osc-vmc-enable-label = Enable
 settings-osc-vmc-network = Network ports
-settings-osc-vmc-network-description = Set the ports for listening and sending data via VMC
+settings-osc-vmc-network-description = Set the ports for listening and sending data via VMC.
 settings-osc-vmc-network-port_in =
     .label = Port In
     .placeholder = Port in (default: 39540)
@@ -444,10 +493,10 @@ settings-osc-vmc-network-port_out =
     .label = Port Out
     .placeholder = Port out (default: 39539)
 settings-osc-vmc-network-address = Network address
-settings-osc-vmc-network-address-description = Choose which address to send out data at via VMC
+settings-osc-vmc-network-address-description = Choose which address to send out data at via VMC.
 settings-osc-vmc-network-address-placeholder = IPV4 address
 settings-osc-vmc-vrm = VRM Model
-settings-osc-vmc-vrm-description = Load a VRM model to allow head anchor and enable a higher compatibility with other applications
+settings-osc-vmc-vrm-description = Load a VRM model to allow head anchor and enable a higher compatibility with other applications.
 settings-osc-vmc-vrm-model_unloaded = No model loaded
 settings-osc-vmc-vrm-model_loaded = { $titled ->
     *[false] Untitled model loaded
@@ -488,7 +537,23 @@ onboarding-wifi_creds-password =
 ## Mounting setup
 onboarding-reset_tutorial-back = Go Back to Mounting calibration
 onboarding-reset_tutorial = Reset tutorial
-onboarding-reset_tutorial-description = This feature isn't done, just press continue
+onboarding-reset_tutorial-explanation = While you use your trackers they might get out of alignment because of IMU yaw drift, or because you might have moved them physically. You have several ways to fix this.
+onboarding-reset_tutorial-skip = Skip step
+# Cares about multiline
+onboarding-reset_tutorial-0 = Tap { $taps } times the highlighted tracker for triggering yaw reset.
+
+    This will make the trackers face the same direction as your HMD.
+# Cares about multiline
+onboarding-reset_tutorial-1 = Tap { $taps } times the highlighted tracker for triggering full reset.
+
+    You need to be standing for this (i-pose). There is a 3 seconds delay (configurable) before it actually happens.
+    This fully resets the position and rotation of all your trackers. It should fix most issues.
+# Cares about multiline
+onboarding-reset_tutorial-2 = Tap { $taps } times the highlighted tracker for triggering mounting reset.
+
+    Mounting reset helps on how the trackers are actually put on you, so if you accidentally moved them and changed how they are oriented by a big amount, this will help.
+
+    You need to be on a pose like you are skiing like it's shown on the Automatic Mounting wizard and you have a 3 second delay (configurable) before it gets triggered.
 
 ## Setup start
 onboarding-home = Welcome to SlimeVR
@@ -535,12 +600,21 @@ onboarding-connect_tracker-next = I connected all my trackers
 ## Tracker calibration tutorial
 onboarding-calibration_tutorial = IMU Calibration Tutorial
 onboarding-calibration_tutorial-subtitle = This will help reduce tracker drifting!
-onboarding-calibration_tutorial-description = Every time you turn on your trackers, they need to rest for a moment on a flat surface to calibrate. Let's do the same thing by clicking the "Calibrate" button, <b>do not move them!</b>
+onboarding-calibration_tutorial-description = Every time you turn on your trackers, they need to rest for a moment on a flat surface to calibrate. Let's do the same thing by clicking the "{ onboarding-calibration_tutorial-calibrate }" button, <b>do not move them!</b>
 onboarding-calibration_tutorial-calibrate = I placed my trackers on the table
 onboarding-calibration_tutorial-status-waiting = Waiting for you
 onboarding-calibration_tutorial-status-calibrating = Calibrating
 onboarding-calibration_tutorial-status-success = Nice!
 onboarding-calibration_tutorial-status-error = The tracker was moved
+
+## Tracker assignment tutorial
+onboarding-assignment_tutorial = How to prepare a Slime Tracker before putting it on
+onboarding-assignment_tutorial-first_step = 1. Place a body part sticker (if you have one) on the tracker according to your choosing
+# This text has a character limit of around 11 characters, so please keep it short
+onboarding-assignment_tutorial-sticker = Sticker
+onboarding-assignment_tutorial-second_step = 2. Attach the strap to your tracker, keeping the hook and loop side of the strap face in the following orientation:
+onboarding-assignment_tutorial-second_step-continuation = The hook and loop side for the extension should be in this orientation:
+onboarding-assignment_tutorial-done = I put stickers and straps!
 
 ## Tracker assignment setup
 onboarding-assign_trackers-back = Go Back to Wi-Fi Credentials
@@ -617,13 +691,15 @@ onboarding-assign_trackers-warning-WAIST = Waist is assigned but you need { $una
 
 ## Tracker mounting method choose
 onboarding-choose_mounting = What mounting calibration method to use?
+# Multiline text
+onboarding-choose_mounting-description = Mounting orientation corrects for the placement of trackers on your body.
 onboarding-choose_mounting-auto_mounting = Automatic mounting
 # Italized text
-onboarding-choose_mounting-auto_mounting-subtitle = Recommended
+onboarding-choose_mounting-auto_mounting-label = Experimental
 onboarding-choose_mounting-auto_mounting-description = This will automatically detect the mounting directions for all of your trackers from 2 poses
 onboarding-choose_mounting-manual_mounting = Manual mounting
 # Italized text
-onboarding-choose_mounting-manual_mounting-subtitle = If you know what you are doing
+onboarding-choose_mounting-manual_mounting-label = Recommended
 onboarding-choose_mounting-manual_mounting-description = This will let you choose the mounting direction manually for each tracker
 
 
@@ -656,14 +732,22 @@ onboarding-automatic_mounting-put_trackers_on-next = I have all my trackers on
 
 ## Tracker proportions method choose
 onboarding-choose_proportions = What proportion calibration method to use?
+# Multiline string
+onboarding-choose_proportions-description = Body proportions are used to know the measurements of your body. They're required to calculate the trackers' positions.
+    When proportions of your body don't match the ones saved, your tracking precision will be worse and you will notice things like skating or sliding, or your body not matching your avatar well.
 onboarding-choose_proportions-auto_proportions = Automatic proportions
 # Italized text
 onboarding-choose_proportions-auto_proportions-subtitle = Recommended
-onboarding-choose_proportions-auto_proportions-description = This will guess your proportions by recording a sample of your movements and passing it through an algorithm
+onboarding-choose_proportions-auto_proportions-descriptionv2 =
+    This will guess your proportions by recording a sample of your movements and passing it through an algorithm.
+
+    <b>This requires having your HMD connected to SlimeVR!</b>
 onboarding-choose_proportions-manual_proportions = Manual proportions
 # Italized text
 onboarding-choose_proportions-manual_proportions-subtitle = For small touches
 onboarding-choose_proportions-manual_proportions-description = This will let you adjust your proportions manually by modifying them directly
+onboarding-choose_proportions-export = Export proportions
+onboarding-choose_proportions-file_type = Body proportions file
 
 ## Tracker manual proportions setup
 onboarding-manual_proportions-back = Go Back to Reset tutorial
@@ -691,6 +775,18 @@ onboarding-automatic_proportions-requirements-description =
     Your trackers and headset are working properly within the SlimeVR server.
     Your headset is reporting positional data to the SlimeVR server (this generally means having SteamVR running and connected to SlimeVR using SlimeVR's SteamVR driver).
 onboarding-automatic_proportions-requirements-next = I have read the requirements
+onboarding-automatic_proportions-check_height-title = Check your height
+onboarding-automatic_proportions-check_height-description = We use your height as a basis of our measurements by using the HMD's height as an approximation of your actual height, but it's better to check if they are right yourself!
+# All the text is in bold!
+onboarding-automatic_proportions-check_height-calculation_warning = Please press the button while standing <u>upright</u> to calculate your height. You have 3 seconds after you press the button!
+onboarding-automatic_proportions-check_height-fetch_height = I'm standing!
+# Context is that the height is unknown
+onboarding-automatic_proportions-check_height-unknown = Unknown
+# Shows an element below it
+onboarding-automatic_proportions-check_height-height = Your height is
+# Shows an element below it
+onboarding-automatic_proportions-check_height-hmd_height = And HMD height is
+onboarding-automatic_proportions-check_height-next_step = They are fine
 onboarding-automatic_proportions-start_recording-title = Get ready to move
 onboarding-automatic_proportions-start_recording-description = We're now going to record some specific poses and moves. These will be prompted in the next screen. Be ready to start when the button is pressed!
 onboarding-automatic_proportions-start_recording-next = Start Recording
@@ -719,6 +815,18 @@ onboarding-automatic_proportions-verify_results-redo = Redo recording
 onboarding-automatic_proportions-verify_results-confirm = They're correct
 onboarding-automatic_proportions-done-title = Body measured and saved.
 onboarding-automatic_proportions-done-description = Your body proportions' calibration is complete!
+onboarding-automatic_proportions-error_modal =
+    <b>Warning:</b> An error was found while estimating proportions!
+    Please <docs>check the docs</docs> or join our <discord>Discord</discord> for help ^_^
+onboarding-automatic_proportions-error_modal-confirm = Understood!
 
 ## Home
 home-no_trackers = No trackers detected or assigned
+
+## Status system
+status_system-StatusTrackerReset = It is recommended to perform a full reset as one or more trackers are unadjusted.
+status_system-StatusSteamVRDisconnected = { $type ->
+    *[steamvr] Currently not connected to SteamVR via the SlimeVR driver.
+    [steamvr_feeder] Currently not connected to the SlimeVR Feeder App.
+}
+status_system-StatusTrackerError = The { $trackerName } tracker has an error.
