@@ -10,6 +10,7 @@ import {
   ModelRatiosT,
   ModelSettingsT,
   ModelTogglesT,
+  ResetsSettingsT,
   RpcMessage,
   SettingsRequestT,
   SettingsResponseT,
@@ -78,10 +79,14 @@ interface SettingsForm {
     yawResetTaps: number;
     fullResetTaps: number;
     mountingResetTaps: number;
-    numberTrackersOverThreshold;
+    numberTrackersOverThreshold: number;
   };
   legTweaks: {
     correctionStrength: number;
+  };
+  resetsSettings: {
+    resetMountingFeet: boolean;
+    armsMountingResetMode: number;
   };
 }
 
@@ -103,7 +108,7 @@ const defaultValues = {
     skatingCorrection: false,
     viveEmulation: false,
     toeSnap: false,
-    flootPlant: true,
+    footPlant: true,
     selfLocalization: false,
   },
   ratios: {
@@ -133,6 +138,10 @@ const defaultValues = {
     numberTrackersOverThreshold: 1,
   },
   legTweaks: { correctionStrength: 0.3 },
+  resetsSettings: {
+    resetMountingFeet: false,
+    armsMountingResetMode: 0,
+  },
 };
 
 export function GeneralSettings() {
@@ -234,6 +243,15 @@ export function GeneralSettings() {
     driftCompensation.maxResets = values.driftCompensation.maxResets;
     settings.driftCompensation = driftCompensation;
 
+    if (values.resetsSettings) {
+      const resetsSettings = new ResetsSettingsT();
+      resetsSettings.resetMountingFeet =
+        values.resetsSettings.resetMountingFeet;
+      resetsSettings.armsMountingResetMode =
+        values.resetsSettings.armsMountingResetMode;
+      settings.resetsSettings = resetsSettings;
+    }
+
     sendRPCPacket(RpcMessage.ChangeSettingsRequest, settings);
   };
 
@@ -328,6 +346,10 @@ export function GeneralSettings() {
           settings.modelSettings?.legTweaks.correctionStrength ||
           defaultValues.legTweaks.correctionStrength,
       };
+    }
+
+    if (settings.resetsSettings) {
+      formData.resetsSettings = settings.resetsSettings;
     }
 
     reset(formData);
@@ -651,6 +673,24 @@ export function GeneralSettings() {
                 )}
               />
             </div>
+            <div className="flex flex-col pt-2 pb-3">
+              <Typography color="secondary">
+                {l10n.getString(
+                  'settings-general-fk_settings-leg_fk-reset_mounting_feet-description'
+                )}
+              </Typography>
+            </div>
+            <div className="grid sm:grid-cols-1 gap-3 pb-3">
+              <CheckBox
+                variant="toggle"
+                outlined
+                control={control}
+                name="resetsSettings.resetMountingFeet"
+                label={l10n.getString(
+                  'settings-general-fk_settings-leg_fk-reset_mounting_feet'
+                )}
+              />
+            </div>
 
             <div className="flex flex-col pt-2 pb-3">
               <Typography bold>
@@ -672,6 +712,58 @@ export function GeneralSettings() {
                   'settings-general-fk_settings-arm_fk-force_arms'
                 )}
               />
+            </div>
+
+            <Typography color="secondary">
+              {l10n.getString(
+                'settings-general-fk_settings-arm_fk-reset_mode-description'
+              )}
+            </Typography>
+            <div className="grid md:grid-cols-2 flex-col gap-3 pt-2">
+              <Radio
+                control={control}
+                name="resetsSettings.armsMountingResetMode"
+                label={l10n.getString(
+                  'settings-general-fk_settings-arm_fk-back'
+                )}
+                desciption={l10n.getString(
+                  'settings-general-fk_settings-arm_fk-back-description'
+                )}
+                value={0}
+              ></Radio>
+              <Radio
+                control={control}
+                name="resetsSettings.armsMountingResetMode"
+                label={l10n.getString(
+                  'settings-general-fk_settings-arm_fk-forward'
+                )}
+                desciption={l10n.getString(
+                  'settings-general-fk_settings-arm_fk-forward-description'
+                )}
+                value={1}
+              ></Radio>
+              <Radio
+                control={control}
+                name="resetsSettings.armsMountingResetMode"
+                label={l10n.getString(
+                  'settings-general-fk_settings-arm_fk-tpose_up'
+                )}
+                desciption={l10n.getString(
+                  'settings-general-fk_settings-arm_fk-tpose_up-description'
+                )}
+                value={2}
+              ></Radio>
+              <Radio
+                control={control}
+                name="resetsSettings.armsMountingResetMode"
+                label={l10n.getString(
+                  'settings-general-fk_settings-arm_fk-tpose_down'
+                )}
+                desciption={l10n.getString(
+                  'settings-general-fk_settings-arm_fk-tpose_down-description'
+                )}
+                value={3}
+              ></Radio>
             </div>
             {config?.debug && (
               <>
